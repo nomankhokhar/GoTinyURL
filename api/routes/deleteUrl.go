@@ -18,7 +18,7 @@ func DeleteURL(c *gin.Context) {
 	if err != nil {
 		c.JSON(
 			http.StatusInternalServerError, gin.H{
-				"error": "Unable to Deletw shortend link",
+				"error": "Unable to Delete shortend link",
 			},
 		)
 		return

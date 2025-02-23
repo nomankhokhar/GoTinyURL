@@ -46,11 +46,16 @@ func AddTag(c *gin.Context) {
 	}
 
 	// check if 'tags' filed already exists and it's slice of strings
-
+	// Declare a slice of strings to hold tags
 	var tags []string
+
+	// Check if the value associated with the "tags" key is a slice of interfaces
 	if existingTags, ok := data["tags"].([]interface{}); ok {
+		// Iterate through each element in the existingTags slice
 		for _, t := range existingTags {
+			// Check if the element is a string
 			if strTag, ok := t.(string); ok {
+				// Append the string tag to the tags slice
 				tags = append(tags, strTag)
 			}
 		}
