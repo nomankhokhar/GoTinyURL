@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+// IsDifferentDomain checks if the given URL belongs to a different domain
+// compared to the domain specified in the environment variable "DOMAIN".
 func IsDifferentDomain(url string) bool {
 	domain := os.Getenv("DOMAIN")
 
@@ -20,6 +22,8 @@ func IsDifferentDomain(url string) bool {
 	return cleanURL != domain
 }
 
+// EnsureHttpPrefix ensures that a URL starts with "http://" or "https://",
+// defaulting to "http://" if neither is present.
 func EnsureHttpPrefix(url string) string {
 	if !strings.HasPrefix(url, "http://") || !strings.HasPrefix(url, "https://") {
 		return "http://" + url

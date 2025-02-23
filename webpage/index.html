@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Shortener API</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 p-10">
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+      <h2 class="text-2xl font-bold mb-4 text-center">URL Shortener API</h2>
+      <div id="loading" class="hidden text-center text-blue-500">
+        Loading...
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div class="mb-6 border-b">
+        <ul class="flex">
+          <li class="mr-4">
+            <button
+              onclick="openTab(event, 'shorten')"
+              class="tab-btn px-4 py-2 border-b-2 border-transparent hover:border-blue-500"
+            >
+              Shorten URL
+            </button>
+          </li>
+          <li class="mr-4">
+            <button
+              onclick="openTab(event, 'retrieve')"
+              class="tab-btn px-4 py-2 border-b-2 border-transparent hover:border-green-500"
+            >
+              Retrieve URL
+            </button>
+          </li>
+          <li class="mr-4">
+            <button
+              onclick="openTab(event, 'addTag')"
+              class="tab-btn px-4 py-2 border-b-2 border-transparent hover:border-yellow-500"
+            >
+              Add Tag
+            </button>
+          </li>
+          <li class="mr-4">
+            <button
+              onclick="openTab(event, 'update')"
+              class="tab-btn px-4 py-2 border-b-2 border-transparent hover:border-purple-500"
+            >
+              Update URL
+            </button>
+          </li>
+          <li>
+            <button
+              onclick="openTab(event, 'delete')"
+              class="tab-btn px-4 py-2 border-b-2 border-transparent hover:border-red-500"
+            >
+              Delete URL
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Shorten URL -->
+      <div id="shorten" class="tab-content">
+        <label class="block text-gray-700">Enter URL to Shorten:</label>
+        <input
+          type="text"
+          id="url"
+          class="w-full p-2 border rounded mt-2"
+          placeholder="Enter URL..."
+        />
+        <button
+          onclick="shortenUrl()"
+          class="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Shorten
+        </button>
+        <p id="shortenResponse" class="text-green-600 mt-2"></p>
+      </div>
+
+      <!-- Retrieve Shortened URL -->
+      <div id="retrieve" class="tab-content hidden">
+        <label class="block text-gray-700">Retrieve URL (Short ID):</label>
+        <input
+          type="text"
+          id="shortId"
+          class="w-full p-2 border rounded mt-2"
+          placeholder="Enter Short ID..."
+        />
+        <button
+          onclick="getShortUrl()"
+          class="mt-2 bg-green-500 text-white px-4 py-2 rounded"
+        >
+          Retrieve
+        </button>
+        <p id="retrieveResponse" class="text-green-600 mt-2"></p>
+      </div>
+
+      <!-- Add Tag -->
+      <div id="addTag" class="tab-content hidden">
+        <label class="block text-gray-700">Add Tag to Shortened URL:</label>
+        <input
+          type="text"
+          id="tagShortId"
+          class="w-full p-2 border rounded mt-2"
+          placeholder="Enter Short ID..."
+        />
+        <input
+          type="text"
+          id="tag"
+          class="w-full p-2 border rounded mt-2"
+          placeholder="Enter Tag..."
+        />
+        <button
+          onclick="addTag()"
+          class="mt-2 bg-yellow-500 text-white px-4 py-2 rounded"
+        >
+          Add Tag
+        </button>
+        <p id="tagResponse" class="text-green-600 mt-2"></p>
+      </div>
+
+      <!-- Update URL -->
+      <div id="update" class="tab-content hidden">
+        <label class="block text-gray-700">Update Shortened URL:</label>
+        <input
+          type="text"
+          id="updateShortId"
+          class="w-full p-2 border rounded mt-2"
+          placeholder="Enter Short ID..."
+        />
+        <input
+          type="text"
+          id="newUrl"
+          class="w-full p-2 border rounded mt-2"
+          placeholder="Enter New URL..."
+        />
+        <button
+          onclick="updateUrl()"
+          class="mt-2 bg-purple-500 text-white px-4 py-2 rounded"
+        >
+          Update
+        </button>
+        <p id="updateResponse" class="text-green-600 mt-2"></p>
+      </div>
+
+      <!-- Delete Shortened URL -->
+      <div id="delete" class="tab-content hidden">
+        <label class="block text-gray-700"
+          >Delete Shortened URL (Short ID):</label
+        >
+        <input
+          type="text"
+          id="deleteShortId"
+          class="w-full p-2 border rounded mt-2"
+          placeholder="Enter Short ID..."
+        />
+        <button
+          onclick="deleteUrl()"
+          class="mt-2 bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Delete
+        </button>
+        <p id="deleteResponse" class="text-red-600 mt-2"></p>
+      </div>
+    </div>
+
+    <script>
+      function openTab(event, tabName) {
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((tab) => tab.classList.add("hidden"));
+        document.getElementById(tabName).classList.remove("hidden");
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((btn) =>
+            btn.classList.remove(
+              "border-blue-500",
+              "border-green-500",
+              "border-yellow-500",
+              "border-purple-500",
+              "border-red-500"
+            )
+          );
+        event.currentTarget.classList.add("border-blue-500");
+      }
+
+      function showLoading() {
+        document.getElementById("loading").classList.remove("hidden");
+      }
+
+      function hideLoading() {
+        document.getElementById("loading").classList.add("hidden");
+      }
+
+      function validateInput(value) {
+        return value.trim() !== "";
+      }
+
+      async function shortenUrl() {
+        const url = document.getElementById("url").value;
+        if (!validateInput(url)) return alert("URL cannot be empty!");
+        showLoading();
+        const response = await fetch("http://localhost:8000/api/v1", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, expiry: 45 }),
+        });
+        hideLoading();
+        const data = await response.json();
+        document.getElementById(
+          "shortenResponse"
+        ).innerText = `Shortened URL: ${data.short}`;
+      }
+
+      async function getShortUrl() {
+        const shortId = document.getElementById("shortId").value;
+        if (!validateInput(shortId)) return alert("Short ID cannot be empty!");
+        showLoading();
+        const response = await fetch(`http://localhost:8000/api/v1/${shortId}`);
+        hideLoading();
+        const data = await response.json();
+        document.getElementById(
+          "retrieveResponse"
+        ).innerText = `Original URL: ${data.data}`;
+      }
+
+      async function addTag() {
+        const shortID = document.getElementById("tagShortId").value;
+        const tag = document.getElementById("tag").value;
+        if (!validateInput(shortID) || !validateInput(tag))
+          return alert("Fields cannot be empty!");
+        showLoading();
+        const response = await fetch("http://localhost:8000/api/v1/addTag", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ shortID, tag }),
+        });
+        hideLoading();
+        const data = await response.json();
+        document.getElementById(
+          "tagResponse"
+        ).innerText = `Tags: ${data.tags.join(", ")}`;
+      }
+
+      async function updateUrl() {
+        const shortID = document.getElementById("updateShortId").value;
+        const newUrl = document.getElementById("newUrl").value;
+        if (!validateInput(shortID) || !validateInput(newUrl))
+          return alert("Fields cannot be empty!");
+        showLoading();
+        const response = await fetch(
+          `http://localhost:8000/api/v1/${shortID}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: newUrl, expiry: 50 }),
+          }
+        );
+        hideLoading();
+        const data = await response.json();
+        document.getElementById("updateResponse").innerText = data.message;
+      }
+
+      async function deleteUrl() {
+        const shortID = document.getElementById("deleteShortId").value;
+        if (!validateInput(shortID)) return alert("Short ID cannot be empty!");
+        showLoading();
+        await fetch(`http://localhost:8000/api/v1/${shortID}`, {
+          method: "DELETE",
+        });
+        hideLoading();
+        document.getElementById("deleteResponse").innerText =
+          "URL Deleted Successfully";
+      }
+    </script>
+  </body>
+</html>

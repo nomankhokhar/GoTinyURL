@@ -45,7 +45,7 @@ func AddTag(c *gin.Context) {
 		data["data"] = val
 	}
 
-	// check if 'tags' fild already exists and it's slice of strings
+	// check if 'tags' filed already exists and it's slice of strings
 
 	var tags []string
 	if existingTags, ok := data["tags"].([]interface{}); ok {
