@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/nomankhokhar/GoTonyUrl/api/database"
 	"github.com/nomankhokhar/GoTonyUrl/api/models"
-	"github.com/nomankhokhar/GoTonyUrl/api/utils"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -49,15 +48,6 @@ func ShortenURL(c *gin.Context) {
 		})
 		return
 	}
-
-	if !utils.IsDifferentDomain(body.URL) {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"error": "This URL is not solveable",
-		})
-		return
-	}
-
-	body.URL = utils.EnsureHttpPrefix(body.URL)
 
 	var id string
 	if body.CustomShort == "" {

@@ -21,8 +21,8 @@ services:
     image: node:alpine
     working_dir: /app
     volumes:
-      - .:/app
-    command: sh -c "npm install -g live-server && live-server webpage --port=5500 --host=0.0.0.0"
+      - ./webpage:/app
+    command: sh -c "npm install && npm start"
     ports:
       - "5500:5500"
     depends_on:
